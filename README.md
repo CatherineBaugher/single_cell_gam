@@ -17,18 +17,22 @@
 <a name="setup"/>
 
 ## Setup
+
 <a name="python"/>
+
 ### Python 3
 Install the latest version of [Python 3](https://www.python.org/downloads/).
 
 [Anaconda](https://www.anaconda.com/distribution/) may also be installed for easier setup of required packages.
 
 <a name="packages"/>
+
 ### Required Packages
 * [matplotlib](https://matplotlib.org/users/installing.html)
 * [pandas](https://pandas.pydata.org/pandas-docs/stable/install.html)
 
 <a name="install"/>
+
 ### Installation
 No installation is required. Simply save the github repository via `git clone https://github.com/CatherineBaugher/single_cell_gam.git`.
 
@@ -66,13 +70,16 @@ optional arguments:
 <a name="data"/>
 
 ## Obtaining Data
+
 <a name="st"/>
+
 ### Segmentation Table
 The full 30kb GAM segmentation table may be downloaded directly at: https://www.ncbi.nlm.nih.gov/geo/download/?acc=GSE64881&format=file&file=GSE64881%5Fsegmentation%5Fat%5F30000bp%2Epassqc%2Emultibam%2Etxt%2Egz
 
 This file and a 1 Mb resolution segmentation table are also hosted on the [GEO archive](https://www.ncbi.nlm.nih.gov/geo/query/acc.cgi?acc=GSE64881).
 
 <a name="gri"/>
+
 ### Genomic Region of Interest (GRI)
 A file indicating the region of interest to analyze is required. This BED file should have 3 fields:
 1. Chromosome (chr#)
@@ -84,7 +91,9 @@ The GRI file may contain multiple lines. This allows the user to, for example, s
 <a name="run"/>
 
 ## Running
+
 <a name="arguments"/>
+
 ### Arguments
 There are two required arguments which are required in order to run the script. In order:
 * **st**: Path to segmentation table
@@ -93,6 +102,7 @@ There are two required arguments which are required in order to run the script. 
 Additionally, an optional argument may be passed with **--outputdir**, indicating a path to create a folder to direct output to. Any files that the program generates will be saved there. By default, files will simply output within the `single_cell_gam` directory.
 
 <a name="flags"/>
+
 ### Flags
 Flags are used to indicate which parts of the pipeline you wish to run.
 * **-b**, **--basicstats**: An initial exploratory analysis is performed to insure that the GRI is adequately captured by NPs in the GAM segregation table. Some basic statistics are recorded to standard output and two files indicating the amount of information within GRI windows and available NPs are generated.
