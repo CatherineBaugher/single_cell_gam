@@ -4,22 +4,26 @@
 [Obtaining Data](#data)
 [Running](#run)
 
+<br><br><br>
+
+<br><br><br>
+
 <a name="setup"/>
 
 ## Setup
 ### Python 3
-Install the latest version of Python 3.
+Install the latest version of [Python 3](https://www.python.org/downloads/).
 
 [Anaconda](https://www.anaconda.com/distribution/) may also be installed for easier setup of required packages.
 
 ### Required Packages
-	* [matplotlib](https://matplotlib.org/users/installing.html)
-	* [pandas](https://pandas.pydata.org/pandas-docs/stable/install.html)
+* [matplotlib](https://matplotlib.org/users/installing.html)
+* [pandas](https://pandas.pydata.org/pandas-docs/stable/install.html)
 
 ### Installation
 Save the github repository via `git clone https://github.com/CatherineBaugher/single_cell_gam.git`.
 
-To ensure a proper Python environment, a test should be performed using the command `python3 singlecellgam.py ./exampledata/chr13seg.txt ./exampledata/hist1.bed -h`.
+To ensure a proper Python environment, perform a test using the command `python3 singlecellgam.py ./exampledata/chr13seg.txt ./exampledata/hist1.bed -h`.
 
 This should display the --help information:
 ```
@@ -47,14 +51,15 @@ optional arguments:
 ### Segmentation Table
 The full 30kb GAM segmentation table may be downloaded directly at: https://www.ncbi.nlm.nih.gov/geo/download/?acc=GSE64881&format=file&file=GSE64881%5Fsegmentation%5Fat%5F30000bp%2Epassqc%2Emultibam%2Etxt%2Egz
 
-This file and a 1 Mb resolution segmentation table are also hosted on the GEO archive: https://www.ncbi.nlm.nih.gov/geo/query/acc.cgi?acc=GSE64881
+This file and a 1 Mb resolution segmentation table are also hosted on the [GEO archive](https://www.ncbi.nlm.nih.gov/geo/query/acc.cgi?acc=GSE64881).
 
 ### Genomic Region of Interest (GRI)
 A file indicating the region of interest to analyze is required. This BED file should have 3 fields:
-	* Chromosome (chr#)
-	* Start position of the region
-	* Stop position of the region
-The file may contain multiple lines. This may allow the user to, for example, skip unmappable regions.
+* Chromosome (chr#)
+* Start position of the region
+* Stop position of the region
+
+The GRI file may contain multiple lines. This allows the user to, for example, skip unmappable regions.
 
 <a name="run"/>
 
