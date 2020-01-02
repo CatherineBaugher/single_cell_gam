@@ -6,8 +6,6 @@
 
 <br><br><br>
 
-<br><br><br>
-
 <a name="setup"/>
 
 ## Setup
@@ -23,11 +21,16 @@ Install the latest version of [Python 3](https://www.python.org/downloads/).
 ### Installation
 Save the github repository via `git clone https://github.com/CatherineBaugher/single_cell_gam.git`.
 
-To ensure a proper Python environment, perform a test using the command `python3 singlecellgam.py ./exampledata/chr13seg.txt ./exampledata/hist1.bed -h`.
+To ensure a proper Python environment, perform a test using the command `python3 singlecellgam.py -h` within the root directory of the project.
 
 This should display the --help information:
 ```
-usage: singlecellgam.py [-h] [-b] [-s] [-p] [-o OUTPUTFILE]
+usage: singlecellgam.py [-h] [-b] [-v] [-c] [-o OUTPUTDIR] st gri
+
+positional arguments:
+  st                    Input tab-separated GAM segregation table
+  gri                   Input bed file of genomic region of interest, with
+                        each line of the form chr# | start | end
 
 optional arguments:
   -h, --help            show this help message and exit
@@ -37,11 +40,15 @@ optional arguments:
                         number of windows in the GRI which are captured by NPs
                         in the segregation table -- For each window within the
                         GRI, calculate the number of NPs that detected it
-  -s, --similarity      Generate a normalized similarity matrix from a given
-                        segregation table and GRI file
-  -p, --pca             Generate a PCA from a given segregation table and GRI
-                        file
-  -o OUTPUTFILE, --outputfile OUTPUTFILE
+  -v, --variation       Performs the following methods to assess variation: --
+                        Generate a normalized similarity matrix from a given
+                        segregation table and GRI file -- Generate a PCA from
+                        a given segregation table and GRI file
+  -c, --cluster         Performs the following clustering methods: -- Cluster
+                        heatmap of NPs that captured similar subsets of
+                        windows from the GRI -- Cluster correlation matrix of
+                        NPs
+  -o OUTPUTDIR, --outputdir OUTPUTDIR
                         Specify a directory to save any outputted files to
 ```
 
@@ -55,9 +62,9 @@ This file and a 1 Mb resolution segmentation table are also hosted on the [GEO a
 
 ### Genomic Region of Interest (GRI)
 A file indicating the region of interest to analyze is required. This BED file should have 3 fields:
-* Chromosome (chr#)
-* Start position of the region
-* Stop position of the region
+1. Chromosome (chr#)
+2. Start position of the region
+3. Stop position of the region
 
 The GRI file may contain multiple lines. This allows the user to, for example, skip unmappable regions.
 
@@ -65,10 +72,30 @@ The GRI file may contain multiple lines. This allows the user to, for example, s
 
 ## Running
 ### Arguments
-[placeholder]
+There are two required arguments which are required in order to run the script. In order:
+* **st**: Path to segmentation table
+* **gri**: Path to GRI file
+
+Additionally, an optional argument may be passed with **--outputdir**, indicating a path to create a folder to direct output to. Any files that the program generates will be saved there. By default, files will simply output within the `single_cell_gam` directory.
 
 ### Flags
-[placeholder]
+Flags are used to indicate which parts of the pipeline you wish to run.
+* **-b**, **--basicstats**: An initial exploratory analysis is performed to insure that the GRI is adequately captured by NPs in the GAM segregation table. Some basic statistics are recorded to standard output and two files indicating the amount of information within GRI windows and available NPs are generated.
+* **-v**, **--variation**: In order to assess variation among NPs relevant to the GRI, a similarity matrix (heatmap) is generated, as well as a 2D linear PCA.
+* **-c**, **--cluster**: Unique patterns of contacts within the region of interest may be discovered through clustering. A heatmap of NPs that captured similar subsets of windows from the GRI and a correlation matrix of NPs is generated. These matrices are then clustered by calculating a distance metric, defined as "the proportion of bits in which only one is on amongst those in which at least one is on" [[binary dist as defined by R](https://www.rdocumentation.org/packages/stats/versions/3.6.2/topics/dist)].
 
 ### Example Tutorial
 [placeholder]
+
+### TODO
+[✓] Create skeleton of argparse program
+
+[_] Implement basic statistics
+
+[_] Implement variation analysis
+
+[_] Implement cluster generation
+
+[_] Investigate relationship of R 'binary' distance to Python 'jaccard' distance
+
+[_] Write example tutorial
