@@ -51,7 +51,7 @@ def pca(dfseg,outdir):
 	for row in pca:
 		w.append(row[0])
 		r.append(row[1])  
-	ax.scatter(w, r)
+	ax.scatter(w, r) # plot pca to 2d scatterplot
 	ax.set_xlabel('First Principal Component')
 	ax.set_ylabel('Second Principal Component')
 	plt.title("2d PCA of Nuclear Profiles in GRI")

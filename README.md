@@ -28,8 +28,10 @@ Install the latest version of [Python 3](https://www.python.org/downloads/).
 <a name="packages"/>
 
 ### Required Packages
+* [numpy](https://docs.scipy.org/doc/numpy/user/install.html)
 * [matplotlib](https://matplotlib.org/users/installing.html)
 * [pandas](https://pandas.pydata.org/pandas-docs/stable/install.html)
+* [scikit-learn](https://scikit-learn.org/stable/install.html)
 
 <a name="install"/>
 
@@ -86,7 +88,7 @@ A file indicating the region of interest to analyze is required. This BED file s
 2. Start position of the region
 3. Stop position of the region
 
-The GRI file may contain multiple lines. This allows the user to, for example, skip unmappable regions.
+The GRI file may contain multiple lines. This may allow the user to, for example, skip unmappable regions.
 
 <a name="run"/>
 
@@ -119,10 +121,8 @@ Flags are used to indicate which parts of the pipeline you wish to run.
 
 [✓] Implement basic statistics
 
-[_] Implement variation analysis
+[✓] Implement variation analysis
 
 [_] Implement cluster generation
-
-[_] Investigate relationship of R 'binary' distance to Python 'jaccard' distance
 
 [_] Write example tutorial
