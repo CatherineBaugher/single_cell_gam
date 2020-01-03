@@ -20,6 +20,7 @@ def selectgri(stpath,gri):
 	# clean up, so that index is the window name and columns chrom, start and stop are dropped
 	st = st.drop(["chrom","start","stop"],axis=1) # keep only the combined window name
 	st = st.set_index("window")
+	st = st.astype(int)
 	return st
 
 # BASICCOUNTS: takes as input the original segmentation table confined to the GRI
@@ -43,13 +44,13 @@ def basiccounts(st):
 def checkcoverage(st,outf):
 	# make count for each window
 	windcounts = pd.DataFrame(columns=["Number of NPs which capture it"],index=st.index)
-	windcounts["Number of NPs which capture it"] = st.sum(axis = 1) # sum of nps for each window
+	windcounts["Number of NPs which capture it"] = st.sum(axis=1) # sum of nps for each window
 	windcounts.index.name = "Genomic Window"
 	windcounts.to_csv(outf + "GRI-info-count.csv")
 	print("-- Finished count of NPs for each window in GRI, saved to",outf + "GRI-info-count.csv")
 	# make count for each NP
 	npcounts = pd.DataFrame(columns=["Number of windows it captures"],index=st.columns)
 	npcounts.index.name = "Nuclear Profile"
-	npcounts["Number of windows it captures"] = st.sum(axis = 0) # sum of windows for each np
+	npcounts["Number of windows it captures"] = st.sum(axis=0) # sum of windows for each np
 	npcounts.to_csv(outf + "NP-info-count.csv")
 	print("-- Finished count of windows for each NP, saved to",outf + "NP-info-count.csv")
