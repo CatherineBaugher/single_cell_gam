@@ -41,6 +41,13 @@ if args.basicstats:
 	print("BASIC STATISTICS done!")
 	print("-------------------------------------------")
 if args.variation:
-	print("variation chosen")
+	print("Performing NP VARIATION ANALYSIS...")
+	progtools.variation.similarity(dfseg,outdir)
+	progtools.variation.pca(dfseg,outdir)
+	print("NP VARIATION ANALYSIS done!")
+	print("-------------------------------------------")
 if args.cluster:
-	print("cluster chosen")
+	print("Performing NP VARIATION ANALYSIS...")
+	# clustering functions here
+	print("NP VARIATION ANALYSIS done!")
+	print("-------------------------------------------")
