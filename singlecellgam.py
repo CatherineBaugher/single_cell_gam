@@ -47,7 +47,7 @@ if args.variation:
 	print("NP VARIATION ANALYSIS done!")
 	print("-------------------------------------------")
 if args.cluster:
-	print("Performing NP VARIATION ANALYSIS...")
-	# clustering functions here
-	print("NP VARIATION ANALYSIS done!")
+	print("Performing CLUSTERING ANALYSIS...")
+	progtools.cluster.heatmapclust(dfseg,outdir)
+	print("CLUSTERING ANALYSIS done!")
 	print("-------------------------------------------")
