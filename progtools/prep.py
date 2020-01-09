@@ -54,3 +54,4 @@ def checkcoverage(st,outf):
 	npcounts["Number of windows it captures"] = st.sum(axis=0) # sum of windows for each np
 	npcounts.to_csv(outf + "NP-info-count.csv")
 	print("-- Finished count of windows for each NP, saved to",outf + "NP-info-count.csv")
+	return (windcounts, npcounts)
