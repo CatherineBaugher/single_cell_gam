@@ -12,6 +12,7 @@ from scipy.spatial import distance
 from scipy.cluster import hierarchy
 from sklearn import decomposition
 from sklearn.cluster import KMeans
+import progtools.radialPositioning
 import seaborn as sns
 import pandas as pd
 from random import random
@@ -39,6 +40,39 @@ def compaction(dfseg,npclusts,outf):
 	plt.title("Boxplot of Clustered Compactions Across GRI")
 	plt.savefig(outf + "cluster-compaction-boxplot.png")
 	print("-- Finished generating boxplot of cluster compactions, saved to",outf + "cluster-compaction-boxplot.png")
+
+# RPCALL: takes as input segmentation table and thresholds for apical and equatorial
+#	saves files of apical and equatorial NPs and writes stats to standard output
+def RPCall(dfseg, outdir, Apical=25, Equatorial=75):
+	rp = progtools.radialPositioning.radialPosition()
+	NPlist = progtools.prep.countst(dfseg, 0, "Number of windows it captures")
+	if len(NPlist.index) == 0:
+		print("-- No Data to Calculate.")
+		return
+	tmp = rp.radialPositionCalc(NPlist, Apical, Equatorial)
+	if tmp == []:
+		print("-- No Data to Calculate.")
+		return
+	ENames = []
+	EData = []
+	ANames = []
+	AData = []
+	for i in range(0,len(tmp[0])):
+		ENames.append(tmp[0][i][0])
+		EData.append(tmp[0][i][1])
+	for i in range(0,len(tmp[1])):
+		ANames.append(tmp[1][i][0])
+		AData.append(tmp[1][i][1])
+	EquatorialDF = pd.DataFrame(EData, index=ENames, columns = ['Window Count'])
+	ApicalDF = pd.DataFrame(AData, index=ANames, columns = ['Window Count'])
+	fileLocE = outdir + 'Equatorial.csv'
+	fileLocA = outdir + 'Apical.csv'
+	EquatorialDF.to_csv(fileLocE)
+	ApicalDF.to_csv(fileLocA)
+	print("-- Number of Equatorial Elements:", tmp[4])
+	print("-- Number of Apical Elements:", tmp[5])
+	print("-- Equatorial Cutoff:", int(tmp[2]))
+	print("-- Apical Cutoff:", int(tmp[3]))
 
 # KMEANSCLUST: takes as input a segmentation table and optional threshold for number of clusters
 #	saves a PCA of NPs clustering into clustparam number of groups

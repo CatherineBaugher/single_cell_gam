@@ -4,7 +4,6 @@ from pathlib import Path
 import progtools.prep
 import progtools.variation
 import progtools.cluster
-import progtools.RPCalc
 
 parser = argparse.ArgumentParser()
 # ARGUMENTS
@@ -20,10 +19,8 @@ parser.add_argument("-v","--variation", help="Performs the following methods to 
 		"\n-- Generate a PCA from a given segregation table and GRI file",action="store_true")
 parser.add_argument("-c","--cluster", help="Performs the following clustering methods:"\
 		"\n-- Cluster heatmap of NPs that captured similar subsets of windows from the GRI"\
-		"\n-- Cluster correlation matrix of NPs",action="store_true")
-parser.add_argument("-r", "--radialposition", help='Performs the following radial positioning method:'\
-		"\n-- Determine the elements that are in the Equatorial region of the cell"
-		"\n-- Determine the elements that are in the Apical region of the cell", action="store_true")
+		"\n-- Cluster correlation matrix of NPs"\
+		"\n-- Calculate compaction and radial position",action="store_true")
 # OPTIONS
 parser.add_argument("--outputdir", help="Specify a directory to save any outputted files to")
 parser.add_argument("--filternp",help="Specify a threshold for filtering out NPs which hit less than X number of windows in the GRI")
@@ -66,6 +63,6 @@ if args.cluster:
 	progtools.cluster.heatmapclust(dfseg,outdir,ctype="single",clustlabs=myclusts)
 	progtools.cluster.heatmapclust(dfseg,outdir,ctype="complete",clustlabs=myclusts)
 	progtools.cluster.compaction(dfseg,myclusts,outdir)
-	progtools.RPCalc.RPCall(dfseg, outdir)
+	progtools.cluster.RPCall(dfseg, outdir)
 	print("CLUSTERING ANALYSIS done!")
 	print("-------------------------------------------")
