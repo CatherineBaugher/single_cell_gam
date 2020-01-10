@@ -4,6 +4,7 @@ from pathlib import Path
 import progtools.prep
 import progtools.variation
 import progtools.cluster
+import progtools.RPCalc
 
 parser = argparse.ArgumentParser()
 # ARGUMENTS
@@ -20,6 +21,9 @@ parser.add_argument("-v","--variation", help="Performs the following methods to 
 parser.add_argument("-c","--cluster", help="Performs the following clustering methods:"\
 		"\n-- Cluster heatmap of NPs that captured similar subsets of windows from the GRI"\
 		"\n-- Cluster correlation matrix of NPs",action="store_true")
+parser.add_argument("-r", "--radialposition", help='Performs the following radial positioning method:'\
+		"\n-- Determine the elements that are in the Equatorial region of the cell"
+		"\n-- Determine the elements that are in the Apical region of the cell", action="store_true")
 # OPTIONS
 parser.add_argument("-o","--outputdir", help="Specify a directory to save any outputted files to")
 
@@ -50,4 +54,9 @@ if args.cluster:
 	print("Performing NP VARIATION ANALYSIS...")
 	# clustering functions here
 	print("NP VARIATION ANALYSIS done!")
+	print("-------------------------------------------")
+if args.radialposition:
+	print("Performing Radial Position Calculation...")
+	progtools.RPCalc.RPCall(dfseg, outdir)
+	print("Radial Position Calculation done!")
 	print("-------------------------------------------")
