@@ -4,7 +4,6 @@ from pathlib import Path
 import progtools.prep
 import progtools.variation
 import progtools.cluster
-import progtools.RPCalc
 
 parser = argparse.ArgumentParser()
 # ARGUMENTS
@@ -20,12 +19,12 @@ parser.add_argument("-v","--variation", help="Performs the following methods to 
 		"\n-- Generate a PCA from a given segregation table and GRI file",action="store_true")
 parser.add_argument("-c","--cluster", help="Performs the following clustering methods:"\
 		"\n-- Cluster heatmap of NPs that captured similar subsets of windows from the GRI"\
-		"\n-- Cluster correlation matrix of NPs",action="store_true")
-parser.add_argument("-r", "--radialposition", help='Performs the following radial positioning method:'\
-		"\n-- Determine the elements that are in the Equatorial region of the cell"
-		"\n-- Determine the elements that are in the Apical region of the cell", action="store_true")
+		"\n-- Cluster correlation matrix of NPs"\
+		"\n-- Calculate compaction and radial position",action="store_true")
 # OPTIONS
-parser.add_argument("-o","--outputdir", help="Specify a directory to save any outputted files to")
+parser.add_argument("--outputdir", help="Specify a directory to save any outputted files to")
+parser.add_argument("--filternp",help="Specify a threshold for filtering out NPs which hit less than X number of windows in the GRI")
+parser.add_argument("--numclusts",help="Specify number of clusters to take in clustering algorithms")
 
 # parse input and call necessary processing functions
 args = parser.parse_args()
@@ -44,6 +43,11 @@ if args.basicstats:
 	progtools.prep.checkcoverage(dfseg,outdir)
 	print("BASIC STATISTICS done!")
 	print("-------------------------------------------")
+if args.filternp:
+	print("Performing FILTERING...")
+	dfseg = progtools.prep.filternps(dfseg,args.filternp)
+	print("FILTERING done!")
+	print("-------------------------------------------")
 if args.variation:
 	print("Performing NP VARIATION ANALYSIS...")
 	progtools.variation.similarity(dfseg,outdir)
@@ -51,12 +55,14 @@ if args.variation:
 	print("NP VARIATION ANALYSIS done!")
 	print("-------------------------------------------")
 if args.cluster:
-	print("Performing NP VARIATION ANALYSIS...")
-	# clustering functions here
-	print("NP VARIATION ANALYSIS done!")
-	print("-------------------------------------------")
-if args.radialposition:
-	print("Performing Radial Position Calculation...")
-	progtools.RPCalc.RPCall(dfseg, outdir)
-	print("Radial Position Calculation done!")
+	print("Performing CLUSTERING ANALYSIS...")
+	if(args.numclusts):
+		myclusts = progtools.cluster.kmeansclust(dfseg,outdir,int(args.numclusts)) # allow to specify of number of clusters to take
+	else:
+		myclusts = progtools.cluster.kmeansclust(dfseg,outdir)
+	progtools.cluster.heatmapclust(dfseg,outdir,ctype="single",clustlabs=myclusts)
+	progtools.cluster.heatmapclust(dfseg,outdir,ctype="complete",clustlabs=myclusts)
+	progtools.cluster.compaction(dfseg,myclusts,outdir)
+	progtools.cluster.RPCall(dfseg, outdir)
+	print("CLUSTERING ANALYSIS done!")
 	print("-------------------------------------------")

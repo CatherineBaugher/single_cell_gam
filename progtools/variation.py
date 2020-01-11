@@ -12,11 +12,13 @@ import pandas as pd
 import numpy as np
 import seaborn as sns
 
+# SIMILARITY: takes as input a segmentation table
+#	generates a normalized similarity matrix between NPs
+#	normalization process:
+#		1. calculate a similarity (summed AND operator) matrix
+#		2. compute total number of 1s for each row
+#		3. given a pairwise comparison, the normalized value is the similarity divided by the lowest total num 1s
 def similarity(dfseg,outdir):
-	#normalization process:
-	#   1. calculate a similarity (summed AND operator) matrix
-	#   2. compute total number of 1s for each row
-	#   3. given a pairwise comparison, the normalized value is the similarity divided by the lowest total num 1s
 	st = dfseg.loc[:,(dfseg != 0).any(axis=0)] # drop NPS which do not cover anything in GRI
 	st = st.T # make NPs the index (to compute similarity matrix of windows, use original dfseg)
 	simmat = (st.values & st.values[:, None]).sum(2) # summed AND operation to make unnormalized similarity
@@ -40,8 +42,10 @@ def similarity(dfseg,outdir):
 	plt.savefig(outdir + "NP-similarity-heatmap.png")
 	print("-- Finished generating heatmap of normalized similarity matrix, saved to",outdir + "NP-similarity-heatmap.png")
 
+# SIMILARITY: takes as input a segmentation table
+#	generates a normalized similarity matrix between NPs
 def pca(dfseg,outdir):
-	st = dfseg.loc[:,(dfseg != 0).any(axis=0)] # drop NPS which do not cover anything in GRI
+	st = dfseg.loc[:,(dfseg != 0).any(axis=0)].T # drop NPS which do not cover anything in GRI and set rows to NPs
 	arr = st.values # get simple np array of values
 	numcols = len(arr[0]) - 1
 	pca = decomposition.PCA(n_components=2).fit_transform(arr) # create model and fit to the data
