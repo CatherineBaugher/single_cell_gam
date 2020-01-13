@@ -4,6 +4,7 @@ from pathlib import Path
 import progtools.prep
 import progtools.variation
 import progtools.cluster
+import progtools.cellcyclegenes
 
 parser = argparse.ArgumentParser()
 # ARGUMENTS
@@ -21,6 +22,7 @@ parser.add_argument("-c","--cluster", help="Performs the following clustering me
 		"\n-- Cluster heatmap of NPs that captured similar subsets of windows from the GRI"\
 		"\n-- Cluster correlation matrix of NPs"\
 		"\n-- Calculate compaction and radial position",action="store_true")
+parser.add_argument("-g","--genes", help="Performs analysis of cell-cycle related genes",action="store_true")
 # OPTIONS
 parser.add_argument("--outputdir", help="Specify a directory to save any outputted files to")
 parser.add_argument("--filternp",help="Specify a threshold for filtering out NPs which hit less than X number of windows in the GRI")
@@ -65,4 +67,9 @@ if args.cluster:
 	progtools.cluster.compaction(dfseg,myclusts,outdir)
 	progtools.cluster.RPCall(dfseg, outdir)
 	print("CLUSTERING ANALYSIS done!")
+	print("-------------------------------------------")
+if args.genes:
+	print("Performing CELL-CYCLE GENE ANALYSIS...")
+	progtools.cellcyclegenes.countgenes(dfseg,outdir)
+	print("CELL-CYCLE GENE ANALYSIS done!")
 	print("-------------------------------------------")
