@@ -4,6 +4,7 @@ from pathlib import Path
 import progtools.prep
 import progtools.variation
 import progtools.cluster
+import progtools.radialPositioning
 
 parser = argparse.ArgumentParser()
 # ARGUMENTS
@@ -64,5 +65,7 @@ if args.cluster:
 	progtools.cluster.heatmapclust(dfseg,outdir,ctype="complete",clustlabs=myclusts)
 	progtools.cluster.compaction(dfseg,myclusts,outdir)
 	progtools.cluster.RPCall(dfseg, outdir)
+	rp = progtools.radialPositioning.radialPosition()
+	rp.clusterBoxPlot(outdir)
 	print("CLUSTERING ANALYSIS done!")
 	print("-------------------------------------------")

@@ -39,6 +39,7 @@ def compaction(dfseg,npclusts,outf):
 	ax.boxplot(collection,labels=["Cluster " + str(x+1) for x in range(0,len(npclusts))])
 	plt.title("Boxplot of Clustered Compactions Across GRI")
 	plt.savefig(outf + "cluster-compaction-boxplot.png")
+	plt.clf()
 	print("-- Finished generating boxplot of cluster compactions, saved to",outf + "cluster-compaction-boxplot.png")
 
 # RPCALL: takes as input segmentation table and thresholds for apical and equatorial
@@ -105,6 +106,9 @@ def kmeansclust(dfseg,outf,clustparam=3):
 	listofclusts = [[] for x in range(0,clustparam)]
 	for ind,row in clustlabs.iterrows():
 		listofclusts[row["cluster"]].append(ind)
+
+	plt.clf()
+
 	return listofclusts
 
 # HEATMAPCLUST: takes as input a segmentation table and optional threshold for max number of clusters
@@ -138,4 +142,5 @@ def heatmapclust(dfseg,outf,clustlabs,ctype="single"):
 	plt.gcf().subplots_adjust(bottom=0.20)
 	plt.suptitle("Clustered Heatmap of NPs")
 	plt.savefig(outf + figname)
+	plt.clf()
 	print("-- Finished generating clustered heatmap, saved to",outf + figname)
