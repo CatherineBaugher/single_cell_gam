@@ -37,7 +37,7 @@ def similarity(dfseg,outdir):
 	simdf.to_csv(outdir + "NP-similarity-matrix.csv")
 	print("-- Finished generating normalized similarity matrix, saved to",outdir + "NP-similarity-matrix.csv")
 	fig, ax = plt.subplots(figsize=(10,10),facecolor='white')
-	sns.heatmap(data=simdf)
+	sns.clustermap(data=simdf,metric="jaccard",method="complete")
 	plt.title("Nuclear Profile Similarity Matrix")
 	plt.savefig(outdir + "NP-similarity-heatmap.png")
 	print("-- Finished generating heatmap of normalized similarity matrix, saved to",outdir + "NP-similarity-heatmap.png")
