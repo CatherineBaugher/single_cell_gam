@@ -4,6 +4,9 @@ PREP.PY
 	including segmentation table processing and generating basic statistics
 '''
 
+import matplotlib
+matplotlib.use('Agg')
+import matplotlib.pyplot as plt
 import pandas as pd
 
 # SELECTGRI: takes as input path to segmentation table and genomic region of interest file
@@ -62,6 +65,18 @@ def checkcoverage(st,outf):
 	npcounts.index.name = "Nuclear Profile"
 	npcounts.to_csv(outf + "NP-info-count.csv")
 	print("-- Finished count of windows for each NP, saved to",outf + "NP-info-count.csv")
+
+# HISTOGRAM: takes as input the segmentation table confined to the GRI and a path to direct output to
+#	saves a histogram of the number of genomic windows in NPs
+def histogram(st,outf):
+	onlyrelevant = st.loc[:,(st != 0).any(axis=0)] # drop NPS which do not cover anything in GRI
+	npcounts = countst(st,0,"Number of genomic windows observed") # count number of windows per NP
+	fig, ax = plt.subplots(figsize=(10,10),facecolor='white')
+	plt.hist(npcounts.values, bins='auto')
+	plt.title("Histogram of the Number of Windows Captured by NPs")
+	plt.ylabel("Number of nuclear profiles")
+	plt.savefig(outf + "NP-windowcount-histogram.png")
+	print("-- Finished generating histogram of window counts, saved to",outf + "NP-windowcount-histogram.png")
 
 # FILTERNPS: takes as input the segmentation table dataframe
 #	outputs the segmentation table without NPs which have below some threshold # of windows

@@ -1,5 +1,5 @@
 '''
-PREP.PY
+CLUSTER.PY
 	This file contains clustering steps,
 	including generating a clustered heatmap and correlation matrix,
 	and finally calculating radial position and compaction
@@ -30,14 +30,13 @@ def compaction(dfseg,npclusts,outf):
 		out1 = selected.sum(axis=1) # calculate sum
 		out1.to_csv(outf + "cluster" + str(x + 1) + "-compaction-unnormalized.csv")
 		out2 = out1 / totnps # normalize sum by total num NPs in the cluster
-		#out2 = out2[out2 >= .25] # OPTIONAL? -- get only windows with >= .25
 		out2.to_csv(outf + "cluster" + str(x + 1) + "-compaction-normalized.csv")
 		collection.append(out2.values)
 		print("-- Cluster",str(x+1),"has compaction average",sum(out2.values) / len(out2))
 	print("-- Finished calculating cluster compactions, unnormalized and normalized values saved to files in form",outf + "clusterX-compaction-normalized.csv","and",outf + "clusterX-compaction-unnormalized.csv")
 	fig, ax = plt.subplots(figsize=(10,10),facecolor='white')
 	ax.boxplot(collection,labels=["Cluster " + str(x+1) for x in range(0,len(npclusts))])
-	plt.title("Boxplot of Clustered Compactions Across GRI")
+	plt.title("Boxplot of Clustered Compactions Across Genomic Region of Interest")
 	plt.savefig(outf + "cluster-compaction-boxplot.png")
 	print("-- Finished generating boxplot of cluster compactions, saved to",outf + "cluster-compaction-boxplot.png")
 

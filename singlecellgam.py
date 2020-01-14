@@ -43,6 +43,7 @@ if args.basicstats:
 	print("Performing BASIC STATISTICS...")
 	progtools.prep.basiccounts(dfseg)
 	progtools.prep.checkcoverage(dfseg,outdir)
+	progtools.prep.histogram(dfseg,outdir)
 	print("BASIC STATISTICS done!")
 	print("-------------------------------------------")
 if args.filternp:
