@@ -64,7 +64,7 @@ if args.cluster:
 	progtools.cluster.heatmapclust(dfseg,outdir,ctype="single",clustlabs=myclusts)
 	progtools.cluster.heatmapclust(dfseg,outdir,ctype="complete",clustlabs=myclusts)
 	progtools.cluster.compaction(dfseg,myclusts,outdir)
-	progtools.cluster.RPCall(dfseg, outdir)
+	progtools.cluster.RPCall(args.st, outdir)
 	rp = progtools.radialPositioning.radialPosition()
 	rp.clusterBoxPlot(outdir)
 	print("CLUSTERING ANALYSIS done!")
