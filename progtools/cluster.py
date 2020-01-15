@@ -46,24 +46,45 @@ def compaction(dfseg,npclusts,outf):
 #	saves files of apical and equatorial NPs and writes stats to standard output
 def RPCall(dfseg, outdir, Apical=25, Equatorial=75):
 	rp = progtools.radialPositioning.radialPosition()
-	NPlist = progtools.prep.countst(dfseg, 0, "Number of windows it captures")
-	if len(NPlist.index) == 0:
-		print("-- No Data to Calculate.")
-		return
+
+	data = pd.read_csv(dfseg, sep="\t", header=None, low_memory=False)
+
+	fetnames = data.iloc[0,3:].values
+	alldata = data.iloc[3:,3:].values
+
+	sumscol = []
+
+	# Here, I am getting the sums of all of the columns, and storing that in its own list, as well as 
+	# getting the total number of elements in all columns so that I can display that later.
+	for i in range(0, alldata.shape[1]):
+
+		# sum1 = sum(list(map(int, alldata[:,1])))
+
+		sum1 = 0
+		for j in range(0, alldata.shape[0]):
+			if alldata[j,i] == '1':
+				sum1+=1
+		sumscol.append(sum1)
+
+	d = {"Number of windows it captures": sumscol}
+
+	NPlist = pd.DataFrame(d, index=fetnames)
+
 	tmp = rp.radialPositionCalc(NPlist, Apical, Equatorial)
-	if tmp == []:
-		print("-- No Data to Calculate.")
-		return
+
 	ENames = []
 	EData = []
 	ANames = []
 	AData = []
+
 	for i in range(0,len(tmp[0])):
 		ENames.append(tmp[0][i][0])
 		EData.append(tmp[0][i][1])
+
 	for i in range(0,len(tmp[1])):
 		ANames.append(tmp[1][i][0])
 		AData.append(tmp[1][i][1])
+
 	EquatorialDF = pd.DataFrame(EData, index=ENames, columns = ['Window Count'])
 	ApicalDF = pd.DataFrame(AData, index=ANames, columns = ['Window Count'])
 	fileLocE = outdir + 'Equatorial.csv'
@@ -74,6 +95,8 @@ def RPCall(dfseg, outdir, Apical=25, Equatorial=75):
 	print("-- Number of Apical Elements:", tmp[5])
 	print("-- Equatorial Cutoff:", int(tmp[2]))
 	print("-- Apical Cutoff:", int(tmp[3]))
+
+	return
 
 # KMEANSCLUST: takes as input a segmentation table and optional threshold for number of clusters
 #	saves a PCA of NPs clustering into clustparam number of groups

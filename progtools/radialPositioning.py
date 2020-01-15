@@ -36,6 +36,8 @@ class radialPosition:
     
     def radialPositionCalc(self, inputdata, apical=25, equatorial=75):
 
+        # print(inputdata)
+
         inputdata = inputdata[inputdata["Number of windows it captures"] > 0]
 
         NPSums = inputdata["Number of windows it captures"]
@@ -143,12 +145,14 @@ class radialPosition:
 
         data_to_plot = [cluster1FinalValues, cluster2FinalValues, cluster3FinalValues]
 
+        ind = np.arange(3)
+
         fig = plt.figure(1)
         plt.xlabel('Clusters')
         plt.ylabel('Windows')
-
-        ax = fig.add_subplot()
-        ax.set_xticklabels(['Cluster1', 'Cluster2', 'Cluster3'])
+        plt.xticks(ind, ('Cluster1', 'Cluster2', 'Cluster3'))
+        
+        ax = plt.subplot(1,2,1)
 
         bp = ax.boxplot(data_to_plot, patch_artist=True)
 
