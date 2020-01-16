@@ -50,7 +50,7 @@ def RPCall(dfseg, outdir, Apical=25, Equatorial=75):
 	data = pd.read_csv(dfseg, sep="\t", header=None, low_memory=False)
 
 	fetnames = data.iloc[0,3:].values
-	alldata = data.iloc[3:,3:].values
+	alldata = data.iloc[1:,3:].values
 
 	sumscol = []
 
