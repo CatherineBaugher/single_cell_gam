@@ -40,6 +40,7 @@ def similarity(dfseg,outdir):
 	sns.clustermap(data=simdf,metric="jaccard",method="complete")
 	plt.title("Nuclear Profile Similarity Matrix")
 	plt.savefig(outdir + "NP-similarity-heatmap.png")
+	plt.clf()
 	print("-- Finished generating heatmap of normalized similarity matrix, saved to",outdir + "NP-similarity-heatmap.png")
 
 # SIMILARITY: takes as input a segmentation table
@@ -60,4 +61,5 @@ def pca(dfseg,outdir):
 	ax.set_ylabel('Second Principal Component')
 	plt.title("2d PCA of Nuclear Profiles in GRI")
 	plt.savefig(outdir + "NP-PCA.png")
+	plt.clf()
 	print("-- Finished generating PCA of nuclear profiles, saved to",outdir + "NP-PCA.png")
