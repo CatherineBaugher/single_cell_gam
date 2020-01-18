@@ -41,7 +41,10 @@ if args.outputdir != None:
 if args.basicstats:
 	print("Performing BASIC STATISTICS...")
 	progtools.prep.basiccounts(dfseg)
-	progtools.prep.checkcoverage(dfseg,outdir)
+	windcount, npcount = progtools.prep.checkcoverage(dfseg,outdir)
+	rp = progtools.radialPositioning.radialPosition()
+	rp.WindowScatter(windcount, outdir)
+	rp.WindowHist(windcount, outdir)
 	print("BASIC STATISTICS done!")
 	print("-------------------------------------------")
 if args.filternp:

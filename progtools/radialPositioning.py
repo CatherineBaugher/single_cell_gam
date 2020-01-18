@@ -35,16 +35,10 @@ class radialPosition:
     #   len(FinalBelowIndices) = number of Apical Nuclear Profiles
     
     def radialPositionCalc(self, inputdata, apical=25, equatorial=75):
-
-        # print(inputdata)
-
         inputdata = inputdata[inputdata["Number of windows it captures"] > 0]
 
         NPSums = inputdata["Number of windows it captures"]
         NPNames = inputdata.index
-
-        # print(NPSums)
-        # print(NPNames)
 
         if inputdata.empty:
             return []
@@ -59,17 +53,8 @@ class radialPosition:
         BelowIndices = np.argwhere(NPSums <= Below)
         AboveIndices = np.argwhere(NPSums >= Above)
 
-        FinalBelowIndices = []
-        FinalAboveIndices = []
-
-        # Fixing a formatting issue.
-        for i in range(0, BelowIndices.shape[0]):
-            FinalBelowIndices.append(BelowIndices[i][0])
-
-        # Fixing a formatting issue
-        for i in range(0, AboveIndices.shape[0]):
-            FinalAboveIndices.append(AboveIndices[i][0])
-
+        FinalBelowIndices = BelowIndices.flatten()
+        FinalAboveIndices = AboveIndices.flatten()
 
         BelowHelper = []
         AboveHelper = []
@@ -175,3 +160,50 @@ class radialPosition:
         fig.savefig((outdir + "NP-ClusterBoxPlot.png"), bbox_inches='tight', pad_inches=0.5)
 
         return
+
+    def WindowScatter(self, windcount, outdir):
+        tmp = windcount.values.flatten()
+
+        # Creating the scatterplot for the window data.
+        grid = sns.JointGrid(x=np.arange(0,len(tmp)), y=tmp)
+        grid.plot_joint(plt.scatter, color="g")
+
+        plt.plot([0, len(tmp)], [stat.mean(tmp), stat.mean(tmp)], linewidth=2, label='Mean', color = 'red')
+        plt.plot([0, len(tmp)], [stat.median(tmp), stat.median(tmp)], linewidth=2, label='Median', color = 'blue')
+        plt.plot([0, len(tmp)], [stat.mode(tmp), stat.mode(tmp)], linewidth=2, label='Mode', color = 'purple')
+        plt.plot([0, len(tmp)], [(stat.stdev(tmp)+stat.mean(tmp)), (stat.stdev(tmp)+stat.mean(tmp))], linewidth=2, label='Standard Deviation', color = 'orange')
+        plt.plot([0, len(tmp)], [(stat.mean(tmp)-stat.stdev(tmp)), (stat.mean(tmp)-stat.stdev(tmp))], linewidth=2, color='orange')
+
+        plt.xlabel(xlabel = "Window Index")
+        plt.ylabel(ylabel = "Window Detection Frequency")
+
+        plt.legend(loc='upper center', bbox_to_anchor=(1.45, 0.8), shadow=True, ncol=1)
+
+        plt.savefig((outdir + "WindowScatterplot.png"), bbox_inches="tight", pad_inches=1)
+
+        plt.clf()
+
+    def WindowHist(self, windcount, outdir):
+        # Getting the occurences of some of the data so that I can display it in a historgram like format.
+        allsimilar = dict(Counter(windcount.values.flatten()))
+        alllist = [(k, v) for k, v in allsimilar.items()] 
+
+        tmp = sorted(alllist, key=itemgetter(0), reverse=False)
+
+        tmp2 = []
+
+        for i in tmp:
+            tmp2.append(i[1])
+
+
+        # Creating the histogram like plot for displaying the number of occurences a specific number of 
+        # Nuclear Profiles appears in any given window.
+        fig = sns.barplot(x=list(range(len(tmp))), y=tmp2, color='gray')
+        # This would be put into words as there are y windows that have x nuclear profiles present
+        fig.set(xlabel='Number of Nuclear Profiles Present', ylabel='Number of Windows')
+        fig.xaxis.set_major_locator(ticker.MultipleLocator(10))
+        fig.xaxis.set_major_formatter(ticker.ScalarFormatter())
+
+        plt.savefig((outdir + "WindowHist.png"), bbox_inches="tight", pad_inches=0.5)
+
+        plt.clf()

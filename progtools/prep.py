@@ -62,6 +62,7 @@ def checkcoverage(st,outf):
 	npcounts.index.name = "Nuclear Profile"
 	npcounts.to_csv(outf + "NP-info-count.csv")
 	print("-- Finished count of windows for each NP, saved to",outf + "NP-info-count.csv")
+	return windcounts, npcounts
 
 # FILTERNPS: takes as input the segmentation table dataframe
 #	outputs the segmentation table without NPs which have below some threshold # of windows
