@@ -9,8 +9,8 @@ import matplotlib.ticker as ticker
 from collections import Counter
 import pandas as pd
 # This is only used to get rid of the warnings that do not necessarily mean anything, you can comment the next 2 lines if you want.
-# import warnings
-# warnings.filterwarnings("ignore")
+import warnings
+warnings.filterwarnings("ignore")
 
 
 # This class is all of the functions that I used to calculate radial positioning within a cell.
@@ -207,3 +207,17 @@ class radialPosition:
         plt.savefig((outdir + "WindowHist.png"), bbox_inches="tight", pad_inches=0.5)
 
         plt.clf()
+        return
+
+    def WindowOfInterest(self, NP, WOI, WindowSize, NeighborhoodSize, windcount):
+        WordIndex = list(np.argwhere(WOI == np.array(windcount)))
+        if len(WordIndex) == 0:
+            print("-- Sequence not present in set.")
+            return -1, -1
+        else:
+            NPPresent = int(NP[WordIndex[0]])
+
+        ROISize = int((NeighborhoodSize / WindowSize) / 2)
+
+        ROIsum = NP[(WordIndex[0][0] - ROISize):(WordIndex[0][0] + ROISize + 1)].sum()
+        return NPPresent, ROIsum

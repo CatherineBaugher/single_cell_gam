@@ -5,6 +5,7 @@ PREP.PY
 '''
 
 import pandas as pd
+import progtools.radialPositioning
 
 # SELECTGRI: takes as input path to segmentation table and genomic region of interest file
 #	outputs a segmentation table (with all NPs) constrained to the genomic region of interest
@@ -74,3 +75,32 @@ def filternps(st,threshold):
 	afterlen = len(result.index)
 	print("--",str(afterlen),"out of",str(beforelen),"NPs filtered (" + str((afterlen / beforelen) * 100) + ")")
 	return result
+
+def NPLookup(segtable, NP, WOI, WindSize, NeighborhoodSize):
+	data = pd.read_csv(segtable, sep="\t", header=None)
+
+	alldata = data.iloc[1:,3:].values
+
+	NPValues = alldata[:,NP]
+	seqnames = data.iloc[1:,0].values
+	start = data.iloc[1:,1].values
+	stop = data.iloc[1:,2].values
+
+	windcount = []
+	for i in range(0, len(seqnames)):
+		tmp =  seqnames[i] + ":" + str(start[i]) + "-" + str(stop[i])
+		windcount.append(tmp)
+
+	rp = progtools.radialPositioning.radialPosition()
+	NPWindow, NPNeighborhood = rp.WindowOfInterest(NPValues, WOI, WindSize, NeighborhoodSize, windcount)
+	if NPWindow == NPNeighborhood == -1:
+		pass
+	else:
+		if NPWindow == 1:
+			print("-- Nuclear Profile shows up in Window of Interest")
+			print("-- Nuclear Profile shows up", NPNeighborhood, " times in Neighborhood of interest")
+		else:
+			print("-- Nuclear Profile does not shows up in Window of Interest")
+			print("-- Nuclear Profile shows up", NPNeighborhood, " times in Neighborhood of interest")
+
+	return

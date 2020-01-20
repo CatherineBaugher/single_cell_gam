@@ -32,6 +32,7 @@ args = parser.parse_args()
 dfgri = pd.read_csv(args.gri, header=None, sep='\t')
 dfseg = progtools.prep.selectgri(args.st,dfgri) # specifically select data from segmentation table within the genomic region of interest
 outdir = "./" # by default, output files to the current directory
+rp = progtools.radialPositioning.radialPosition()
 print("-------------------------------------------")
 if args.outputdir != None:
 	Path(args.outputdir).mkdir(parents=True, exist_ok=True) # create the directory to output to
@@ -42,7 +43,7 @@ if args.basicstats:
 	print("Performing BASIC STATISTICS...")
 	progtools.prep.basiccounts(dfseg)
 	windcount, npcount = progtools.prep.checkcoverage(dfseg,outdir)
-	rp = progtools.radialPositioning.radialPosition()
+	progtools.prep.NPLookup(args.st, 9, "chr13:21840000-21870000", 30, 270)
 	rp.WindowScatter(windcount, outdir)
 	rp.WindowHist(windcount, outdir)
 	print("BASIC STATISTICS done!")
@@ -68,7 +69,6 @@ if args.cluster:
 	progtools.cluster.heatmapclust(dfseg,outdir,ctype="complete",clustlabs=myclusts)
 	progtools.cluster.compaction(dfseg,myclusts,outdir)
 	progtools.cluster.RPCall(args.st, outdir)
-	rp = progtools.radialPositioning.radialPosition()
 	rp.clusterBoxPlot(outdir)
 	print("CLUSTERING ANALYSIS done!")
 	print("-------------------------------------------")
