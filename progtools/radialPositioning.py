@@ -9,8 +9,8 @@ import matplotlib.ticker as ticker
 from collections import Counter
 import pandas as pd
 # This is only used to get rid of the warnings that do not necessarily mean anything, you can comment the next 2 lines if you want.
-import warnings
-warnings.filterwarnings("ignore")
+# import warnings
+# warnings.filterwarnings("ignore")
 
 
 # This class is all of the functions that I used to calculate radial positioning within a cell.
@@ -220,4 +220,4 @@ class radialPosition:
         ROISize = int((NeighborhoodSize / WindowSize) / 2)
 
         ROIsum = NP[(WordIndex[0][0] - ROISize):(WordIndex[0][0] + ROISize + 1)].sum()
-        return NPPresent, ROIsum
+        return NPPresent, ROIsumf
