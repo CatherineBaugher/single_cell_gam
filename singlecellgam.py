@@ -64,9 +64,9 @@ if args.cluster:
 		myclusts = progtools.cluster.kmeansclust(dfseg,outdir,int(args.numclusts)) # allow to specify of number of clusters to take
 	else:
 		myclusts = progtools.cluster.kmeansclust(dfseg,outdir)
-	progtools.cluster.heatmapclust(dfseg,outdir,ctype="single",clustlabs=myclusts)
-	progtools.cluster.heatmapclust(dfseg,outdir,ctype="complete",clustlabs=myclusts)
-	progtools.cluster.compaction(dfseg,myclusts,outdir)
+	progtools.cluster.heatmapclust(dfseg,myclusts,outdir)
+	progtools.cluster.clustersimilarityheatmap(dfseg,myclusts[0],outdir)
+	progtools.cluster.compaction(dfseg,myclusts[0],outdir)
 	progtools.cluster.RPCall(args.st, outdir)
 	rp = progtools.radialPositioning.radialPosition()
 	rp.clusterBoxPlot(outdir)
