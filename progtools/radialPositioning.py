@@ -174,8 +174,8 @@ class radialPosition:
         plt.plot([0, len(tmp)], [(stat.stdev(tmp)+stat.mean(tmp)), (stat.stdev(tmp)+stat.mean(tmp))], linewidth=2, label='Standard Deviation', color = 'orange')
         plt.plot([0, len(tmp)], [(stat.mean(tmp)-stat.stdev(tmp)), (stat.mean(tmp)-stat.stdev(tmp))], linewidth=2, color='orange')
 
-        plt.xlabel(xlabel = "Window Index")
-        plt.ylabel(ylabel = "Window Detection Frequency")
+        plt.xlabel("Window Index")
+        plt.ylabel("Window Detection Frequency")
 
         plt.legend(loc='upper center', bbox_to_anchor=(1.45, 0.8), shadow=True, ncol=1)
 
