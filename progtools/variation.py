@@ -12,15 +12,16 @@ import pandas as pd
 import numpy as np
 import seaborn as sns
 
-# SIMILARITY: takes as input a segmentation table
+# CALCSIM: takes as input a segmentation table
 #	generates a normalized similarity matrix between NPs
 #	normalization process:
 #		1. calculate a similarity (summed AND operator) matrix
 #		2. compute total number of 1s for each row
 #		3. given a pairwise comparison, the normalized value is the similarity divided by the lowest total num 1s
-def similarity(dfseg,outdir):
+def calcsim(dfseg,dfaxis=0):
 	st = dfseg.loc[:,(dfseg != 0).any(axis=0)] # drop NPS which do not cover anything in GRI
-	st = st.T # make NPs the index (to compute similarity matrix of windows, use original dfseg)
+	if(dfaxis==1): # do it for columns (NPs) rather than index
+		st = st.T # make NPs the index (to compute similarity matrix of windows, use original dfseg)
 	simmat = (st.values & st.values[:, None]).sum(2) # summed AND operation to make unnormalized similarity
 	rowsums = np.sum(st.values,axis=1) # sum up windows for each row
 	normsim = []
@@ -33,12 +34,18 @@ def similarity(dfseg,outdir):
 			else:
 				newr.append(simmat[x][y]/minval) # similarity divided by the lowest total num 1s gives normalized
 		normsim.append(newr)
+	return (st,normsim)
+
+# SIMILARITY: takes as input a segmentation table
+#	builds similarity matrix and saves data and figure as a heatmap
+def similarity(dfseg,outdir):
+	st, normsim = calcsim(dfseg,1)
 	simdf = pd.DataFrame(normsim,columns=st.index,index=st.index) # np array
 	simdf.to_csv(outdir + "NP-similarity-matrix.csv")
 	print("-- Finished generating normalized similarity matrix, saved to",outdir + "NP-similarity-matrix.csv")
 	fig, ax = plt.subplots(figsize=(10,10),facecolor='white')
-	sns.heatmap(data=simdf)
-	plt.title("Nuclear Profile Similarity Matrix")
+	sns.clustermap(data=simdf,method="single")
+	plt.suptitle("Nuclear Profile Similarity Matrix")
 	plt.savefig(outdir + "NP-similarity-heatmap.png")
 	plt.clf()
 	print("-- Finished generating heatmap of normalized similarity matrix, saved to",outdir + "NP-similarity-heatmap.png")
@@ -55,11 +62,11 @@ def pca(dfseg,outdir):
 	r = [] # second principal component
 	for row in pca:
 		w.append(row[0])
-		r.append(row[1])  
+		r.append(row[1])
 	ax.scatter(w, r) # plot pca to 2d scatterplot
 	ax.set_xlabel('First Principal Component')
 	ax.set_ylabel('Second Principal Component')
-	plt.title("2d PCA of Nuclear Profiles in GRI")
+	plt.title("2D PCA of Nuclear Profiles in Genomic Region of Interest")
 	plt.savefig(outdir + "NP-PCA.png")
 	plt.clf()
 	print("-- Finished generating PCA of nuclear profiles, saved to",outdir + "NP-PCA.png")

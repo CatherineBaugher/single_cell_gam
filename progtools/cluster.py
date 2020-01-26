@@ -1,5 +1,5 @@
 '''
-PREP.PY
+CLUSTER.PY
 	This file contains clustering steps,
 	including generating a clustered heatmap and correlation matrix,
 	and finally calculating radial position and compaction
@@ -13,8 +13,10 @@ from scipy.cluster import hierarchy
 from sklearn import decomposition
 from sklearn.cluster import KMeans
 import progtools.radialPositioning
+import progtools.variation
 import seaborn as sns
 import pandas as pd
+import progtools.prep
 from random import random
 import numpy as np
 
@@ -30,14 +32,13 @@ def compaction(dfseg,npclusts,outf):
 		out1 = selected.sum(axis=1) # calculate sum
 		out1.to_csv(outf + "cluster" + str(x + 1) + "-compaction-unnormalized.csv")
 		out2 = out1 / totnps # normalize sum by total num NPs in the cluster
-		#out2 = out2[out2 >= .25] # OPTIONAL? -- get only windows with >= .25
 		out2.to_csv(outf + "cluster" + str(x + 1) + "-compaction-normalized.csv")
 		collection.append(out2.values)
 		print("-- Cluster",str(x+1),"has compaction average",sum(out2.values) / len(out2))
 	print("-- Finished calculating cluster compactions, unnormalized and normalized values saved to files in form",outf + "clusterX-compaction-normalized.csv","and",outf + "clusterX-compaction-unnormalized.csv")
 	fig, ax = plt.subplots(figsize=(10,10),facecolor='white')
 	ax.boxplot(collection,labels=["Cluster " + str(x+1) for x in range(0,len(npclusts))])
-	plt.title("Boxplot of Clustered Compactions Across GRI")
+	plt.title("Boxplot of Clustered Compactions Across Genomic Region of Interest")
 	plt.savefig(outf + "cluster-compaction-boxplot.png")
 	plt.clf()
 	print("-- Finished generating boxplot of cluster compactions, saved to",outf + "cluster-compaction-boxplot.png")
@@ -109,61 +110,84 @@ def kmeansclust(dfseg,outf,clustparam=3):
 	fig, ax = plt.subplots(figsize=(10,10))
 	# calculate k-means clusters
 	pts = np.array([[row[0],row[1]] for row in pca])
-	kmeansclust = KMeans(n_clusters=clustparam, random_state=0).fit(pts)
+	kmeansclust = KMeans(n_clusters=clustparam, max_iter=5000, random_state=0).fit(pts)
 	kmlabels = kmeansclust.labels_
 	centroids = kmeansclust.cluster_centers_
-	clustlabs = pd.DataFrame(columns=["cluster"],index=st.index)
+	#windcounts = progtools.prep.countst(dfseg,0,"Number of windows") # get window counts
+	#windcounts.index.name = "Nuclear profile"
+	clustlabs = pd.DataFrame(index=st.index) # build table output for NPs
+	#clustlabs = clustlabs.join(windcounts)
+	clustlabs.index.name = "Nuclear profile"
 	clustlabs["cluster"] = kmlabels
+	mycolors = [] # store colors for each cluster
+	listofclusts = [[] for x in range(0,clustparam)] # output for other clustering functions
 	for i in range(clustparam):
 		thisclust = pts[np.where(kmlabels==i)] # find nps with current cluster label
-		plt.plot(thisclust[:,0],thisclust[:,1],'o',label="Cluster "+str(i+1)) # plot the data observations
-		plt.plot(centroids[i,0],centroids[i,1],'kx') # plot centroid
+		scat = ax.scatter(thisclust[:,0],thisclust[:,1]) # plot the data observations
+		ax.plot(centroids[i,0],centroids[i,1],'kx') # plot centroid
+		mycolors.append(scat.get_facecolor()[0])
+	for ind,row in clustlabs.iterrows():
+		listofclusts[row["cluster"]].append(ind) # build list of list output of clusters
     # create figure
 	ax.set_xlabel('First Principal Component')
 	ax.set_ylabel('Second Principal Component')
-	plt.title("K-means Clustering of Nuclear Profiles - 2d PCA")
+	plt.title("K-means Clustering of Nuclear Profiles - 2D PCA")
 	plt.savefig(outf + "cluster-kmeans-pca.png")
+	clustlabs["cluster"] = clustlabs["cluster"] # start cluster number at 1, instead of 0
 	clustlabs.to_csv(outf + "cluster-kmeans-raw.csv")
 	print("-- Finished generating K-means clustering, saved to",outf + "cluster-kmeans-raw.csv")
 	print("-- Finished generating PCA of K-means clustering, saved to",outf + "cluster-kmeans-pca.png")
-	listofclusts = [[] for x in range(0,clustparam)]
-	for ind,row in clustlabs.iterrows():
-		listofclusts[row["cluster"]].append(ind)
-
 	plt.clf()
-
-	return listofclusts
+	# build table output for NPs
+	return (listofclusts, mycolors)
 
 # HEATMAPCLUST: takes as input a segmentation table and optional threshold for max number of clusters
 #	saves a clustermap of NPs using jaccard distance
 #	precomputed clusters may also be fed to the program to color labels
-def heatmapclust(dfseg,outf,clustlabs,ctype="single"):
+def heatmapclust(dfseg,clustlabs,outf):
 	st = dfseg.loc[:,(dfseg != 0).any(axis=0)] # drop NPS which do not cover anything in GRI
 	st = st.T # make NPs be the rows
-	stdist = distance.pdist(st,metric="jaccard")
-	dendro = hierarchy.linkage(stdist,method=ctype)
-	numclust = len(clustlabs) # take the number of clusters from the list of lists
-	mycolors = [] # get set of N=numclust number of colors for labelling clustermap
-	r = int(random() * 256) # initialize modulus values for red, green, blue
-	g = int(random() * 256)
-	b = int(random() * 256)
-	for i in range(1,numclust+1):
-		r = (r + (256/numclust)) % 256
-		g = (g + (256/numclust)) % 256
-		b = (b + (256/numclust)) % 256
-		mycolors.append((r/256,g/256,b/256)) # constrain values 0-1
+	st = st.loc[[i for j in clustlabs[0] for i in j]] # flatten to put in order of clusters
+	numclust = len(clustlabs[0]) # take the number of clusters from the list of lists
+	mycolors = clustlabs[1] # get set of N=numclust number of colors for labelling clustermap
 	classinfo = {} # make dictionary of NPs and their respective clusters
-	for c in range(0,len(clustlabs)):
-		for np in clustlabs[c]:
+	for c in range(0,len(clustlabs[0])):
+		for np in clustlabs[0][c]:
 			classinfo[np] = mycolors[c]
-	figname = "cluster-heatmap-"+ctype+".png"
 	fig, ax = plt.subplots(figsize=(10,10),facecolor="white")
-	myclust = sns.clustermap(st,row_linkage=dendro,col_cluster=False) # use linkage to build clustermap
-	for lab in myclust.ax_heatmap.axes.get_yticklabels():
+	myclust = sns.heatmap(st) # use linkage to build clustermap
+	for lab in myclust.axes.get_yticklabels():
 		npname = lab.get_text()
 		lab.set_color(classinfo[npname])
-	plt.gcf().subplots_adjust(bottom=0.20)
-	plt.suptitle("Clustered Heatmap of NPs")
-	plt.savefig(outf + figname)
+	plt.title("Clustered Heatmap of NPs")
+	plt.tight_layout()
+	st.to_csv(outf+"heatmapinquestion.csv")
+	plt.savefig(outf + "cluster-heatmap.png")
 	plt.clf()
-	print("-- Finished generating clustered heatmap, saved to",outf + figname)
+	print("-- Finished generating clustered heatmap, saved to",outf + "cluster-heatmap.png")
+
+def clustersimilarityheatmap(dfseg,npclusts,outf):
+	x = 0
+	# make a heatmap for entire genome
+	st, normsim = progtools.variation.calcsim(dfseg,0)
+	simdf = pd.DataFrame(normsim,columns=st.index,index=st.index) # np array
+	fig, ax = plt.subplots(figsize=(10,10),facecolor='white')
+	sns.heatmap(simdf)
+	plt.title("Similarity Matrix - Whole")
+	plt.tight_layout()
+	plt.savefig(outf + "window-similarity-heatmap.png")
+	plt.clf()
+	print("-- Finished generating heatmap of normalized similarity matrix for Cluster " + str(x) + ", saved to",outf + "window-similarity-heatmap.png")
+	# make a heatmap for each cluster
+	for clust in npclusts:
+		x += 1
+		thisclust = dfseg[clust]
+		st, normsim = progtools.variation.calcsim(thisclust,0)
+		simdf = pd.DataFrame(normsim,columns=st.index,index=st.index) # np array
+		fig, ax = plt.subplots(figsize=(10,10),facecolor='white')
+		sns.heatmap(simdf)
+		plt.title("Similarity Matrix - Cluster "+str(x))
+		plt.tight_layout()
+		plt.savefig(outf + "window-similarity-heatmap-cluster"+str(x)+".png")
+		plt.clf()
+		print("-- Finished generating heatmap of normalized similarity matrix for Cluster " + str(x) + ", saved to",outf + "window-similarity-heatmap.png")
